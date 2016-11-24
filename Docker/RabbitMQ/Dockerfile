@@ -10,7 +10,7 @@ RUN rabbitmq-plugins enable rabbitmq_web_stomp
 ADD rabbitmq-start.sh /root/rabbitmq-start
 RUN chmod +x /root/rabbitmq-start
 
-EXPOSE 15671 15672 15674
+EXPOSE 15671 15672 15674 5671 5672 25672 4369
 
 
 # Define default command
