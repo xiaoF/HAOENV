@@ -1,5 +1,6 @@
 mongodb:
   image: mongo:latest
+  container_name: mongo
   hostname: mongo
   ports:
     - 27017:27017

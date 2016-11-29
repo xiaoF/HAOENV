@@ -1,9 +1,5 @@
 FROM rabbitmq:3.6.1
 
-# Define environment variables.
-ENV RABBITMQ_USER admin
-ENV RABBITMQ_PASSWORD admin
-
 RUN rabbitmq-plugins enable rabbitmq_management
 RUN rabbitmq-plugins enable rabbitmq_web_stomp
 

@@ -2,12 +2,12 @@
 
 # Create Rabbitmq user
 ( sleep 5 ; \
-rabbitmqctl add_user $RABBITMQ_USER $RABBITMQ_PASSWORD ; \
-rabbitmqctl set_user_tags $RABBITMQ_USER administrator ; \
-rabbitmqctl set_permissions -p / $RABBITMQ_USER  ".*" ".*" ".*" ; \
+rabbitmqctl add_user admin admin ; \
+rabbitmqctl set_user_tags admin administrator ; \
+rabbitmqctl set_permissions -p / admin  ".*" ".*" ".*" ; \
 rabbitmqctl delete_user guest ; \
 
-echo "*** User '$RABBITMQ_USER' with password '$RABBITMQ_PASSWORD' completed. ***" ; \
+echo "*** User admin with password admin completed. ***" ; \
 echo "*** Log in the WebUI at port 15672 ***") &
 
 rabbitmq-server $@
