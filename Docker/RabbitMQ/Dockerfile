@@ -1,4 +1,4 @@
-FROM rabbitmq
+FROM rabbitmq:3.6.1
 
 # Define environment variables.
 ENV RABBITMQ_USER admin
