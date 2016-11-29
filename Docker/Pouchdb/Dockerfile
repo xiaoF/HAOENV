@@ -19,10 +19,6 @@ RUN apt-get -y purge g++ make python git && \
 ADD add-db-user.sh /usr/bin/add-db-user.sh
 RUN chmod +x /usr/bin/add-db-user.sh
 
-RUN mkdir /pouchdb
-
-WORKDIR /pouchdb
-
 EXPOSE 5984
 
 

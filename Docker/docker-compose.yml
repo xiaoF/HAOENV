@@ -1,0 +1,65 @@
+mongodb:
+  image: mongo:latest
+  hostname: mongo
+  ports:
+    - 27017:27017
+  volumes:
+    - haostay_dev_mongo:/haostay_dev/mongo
+  command: mongod --replSet rs
+
+elasticsearch:
+  image: elasticsearch:2.3.3
+  container_name: elasticsearch
+  hostname: elasticsearch
+  cpu_quota: 60000
+  mem_limit: 1024m
+  volumes:
+    - haostay_dev_elasticsearch:/haostay_dev/elasticsearch
+  environment:
+    - TZ=Asia/Shanghai
+  ports:
+    - 9200:9200
+    - 9300:9300
+
+rabbitmq:
+  build: ./rabbitmq
+  container_name: rabbitmq
+  volumes:
+   - haostay_dev_rabbitmq:/haostay_dev/rabbitmq
+  ports:
+   - "15674:15674"
+   - "5672:5672"
+   - "5671:5671"
+   - "15672:15672"
+   - "15671:15671"
+   - "61613:61613"
+   - "61614:61614"
+   - "25672:25672"
+   - "4369:4369"
+
+redis:
+   #image: redis:3.2.0
+   image: redis:latest
+   container_name: redis
+   hostname: redis
+   volumes:
+     - haostay_dev_redis:/haostay_dev/redis
+   ports:
+     - "6379:6379"
+   command: redis-server --protected-mode no
+
+pouchdb:
+  build: ./pouchdb
+  container_name: pouchdb
+  volumes:
+   - haostay_dev_pouchdb:/haostay_dev/pouchdb
+  ports:
+   - "5984:5984"
+
+mongoconnector:
+  build: ./mongoconnector
+  container_name: mongoconnector
+  cpu_quota: 40000
+  links:
+    - mongodb
+    - elasticsearch
