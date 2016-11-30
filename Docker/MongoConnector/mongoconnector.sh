@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mongo="${MONGO:-mongo}"
+mongo="${MONGO:-mongo1}"
 mongoport="${MONGOPORT:-27017}"
 elasticsearch="${ELASTICSEARCH:-elasticsearch}"
 elasticport="${ELASTICPORT:-9200}"
