@@ -1,6 +1,6 @@
 mongo3:
   hostname: mongo3
-  image: mongo:3.0.6
+  image: mongo:latest
   entrypoint: [ "/usr/bin/mongod", "--replSet", "rs", "--journal", "--smallfiles", "--rest" ]
   ports:
     - "27018:27017"
@@ -8,11 +8,10 @@ mongo3:
   container_name: mongo3
   volumes:
     - haostay_dev_mongo:/haostay_dev/mongo3
-  restart: always
 
 mongo2:
   hostname: mongo2
-  image: mongo:3.0.6
+  image: mongo:latest
   entrypoint: [ "/usr/bin/mongod", "--replSet", "rs", "--journal", "--smallfiles", "--rest" ]
   ports:
     - "27019:27017"
@@ -20,11 +19,11 @@ mongo2:
   container_name: mongo2
   volumes:
       - haostay_dev_mongo:/haostay_dev/mongo2
-  restart: always
+
 
 mongo1:
   hostname: mongo1
-  image: mongo:3.0.6
+  image: mongo:latest
   entrypoint: [ "/usr/bin/mongod", "--replSet", "rs", "--journal", "--smallfiles", "--rest" ]
   ports:
     - "27017:27017"
@@ -35,13 +34,12 @@ mongo1:
   links:
     - mongo2:mongo2
     - mongo3:mongo3
-  restart: always
+
 
 elasticsearch:
   image: elasticsearch:2.3.3
   container_name: elasticsearch
   hostname: elasticsearch
-  cpu_quota: 60000
   mem_limit: 1024m
   ports:
     - "9200:9200"
@@ -53,11 +51,11 @@ elasticsearch:
   volumes:
     - haostay_dev_elasticsearch:/haostay_dev/elasticsearch
     - ./scripts/logging.yml:/etc/elasticsearch/logging.yml
-  restart: always
+
 
 # This configures the MongoDB replicaset
 mongosetup:
-  image: mongo:3.0.6
+  image: mongo:latest
   links:
     - mongo1:mongo1
     - mongo2:mongo2
@@ -82,7 +80,7 @@ rabbitmq:
    - "25672:25672"
    - "4369:4369"
   entrypoint: ["/usr/bin/rabbitmq-start"]
-  restart: always
+
 
 redis:
    #image: redis:3.2.0
@@ -94,7 +92,7 @@ redis:
    ports:
      - "6379:6379"
    command: redis-server --protected-mode no
-   restart: always
+
 
 pouchdb:
   build: ./pouchdb
@@ -103,16 +101,15 @@ pouchdb:
    - haostay_dev_pouchdb:/haostay_dev/pouchdb
   ports:
    - "5984:5984"
-  restart: always
+
 
 mongoconnector:
   build: ./mongoconnector
   container_name: mongoconnector
-  cpu_quota: 40000
   links:
+    - elasticsearch:elasticsearch
     - mongo1:mongo1
     - mongo2:mongo2
     - mongo3:mongo3
-    - elasticsearch:elasticsearch
   entrypoint: [ "/usr/bin/mongoconnector" ]
-  restart: always
+
