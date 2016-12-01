@@ -90,19 +90,19 @@ $ docker-compose up -d  # 再重启所有container
 ```bash
 $ docker ps
 # 查看当前docker下有多少运行的container
-docker ps -a
+$ docker ps -a
 # 查看当前docker下有多少container
-docker images
+$ docker images
 # 查看当前docker下有多少image
-docker stop $(docker ps -a -q) 
+$ docker stop $(docker ps -a -q) 
 # 停止所有的container 运行
-docker rm $(docker ps -a -q)
+$ docker rm $(docker ps -a -q)
 # 删除所有的container
-docker rmi $(docker images -q)
+$ docker rmi $(docker images -q)
 # 删除所有的image
-eval $(docker-machine env xiaof)
+$ eval $(docker-machine env xiaof)
 # 切换某一个docker-machine
-docker exec -it <container> bash
+$ docker exec -it <container> bash
 # 进入某个container
 ```
 
