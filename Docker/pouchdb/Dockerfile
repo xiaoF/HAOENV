@@ -16,8 +16,6 @@ RUN apt-get -y purge g++ make python git && \
     apt-get -y autoremove && \
     apt-get -y autoclean
 
-ADD add-db-user.sh /usr/bin/add-db-user.sh
-RUN chmod +x /usr/bin/add-db-user.sh
 
 EXPOSE 5984
 
