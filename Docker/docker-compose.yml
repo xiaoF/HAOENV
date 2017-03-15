@@ -88,6 +88,7 @@ redis:
    hostname: redis
    volumes:
      - haostay_dev_redis:/haostay_dev/redis
+     - haostay_dev_redis_data:/data
    ports:
      - "6379:6379"
    command: redis-server /usr/bin/redis.conf --protected-mode no
