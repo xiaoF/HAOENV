@@ -1,39 +1,35 @@
-#!/bin/bash
+#!/bin/bash 
 
-MONGODB1=`ping -c 1 mongo1 | head -1  | cut -d "(" -f 2 | cut -d ")" -f 1`
-MONGODB2=`ping -c 1 mongo2 | head -1  | cut -d "(" -f 2 | cut -d ")" -f 1`
-MONGODB3=`ping -c 1 mongo3 | head -1  | cut -d "(" -f 2 | cut -d ")" -f 1`
+mongodb1=`getent hosts ${MONGO1} | awk '{ print $1 }'`
+mongodb2=`getent hosts ${MONGO2} | awk '{ print $1 }'`
+mongodb3=`getent hosts ${MONGO3} | awk '{ print $1 }'`
+
+port=${PORT:-27017}
 
 echo "Waiting for startup.."
-until curl http://${MONGODB1}:28017/serverStatus\?text\=1 2>&1 | grep uptime | head -1; do
+until mongo --host ${mongodb1}:${port} --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
   printf '.'
   sleep 1
 done
 
-echo curl http://${MONGODB1}:28017/serverStatus\?text\=1 2>&1 | grep uptime | head -1
 echo "Started.."
 
-
-echo SETUP.sh time now: `date +"%T" `
-mongo --host ${MONGODB1}:27017 <<EOF
+echo setup.sh time now: `date +"%T" `
+mongo --host ${mongodb1}:${port} <<EOF
    var cfg = {
-        "_id": "rs",
-        "version": 1,
+        "_id": "${RS}",
         "members": [
             {
                 "_id": 0,
-                "host": "${MONGODB1}:27017",
-                "priority": 2
+                "host": "${mongodb1}:${port}"
             },
             {
                 "_id": 1,
-                "host": "${MONGODB2}:27017",
-                "priority": 0
+                "host": "${mongodb2}:${port}"
             },
             {
                 "_id": 2,
-                "host": "${MONGODB3}:27017",
-                "priority": 0
+                "host": "${mongodb3}:${port}"
             }
         ]
     };
