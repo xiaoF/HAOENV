@@ -1,0 +1,121 @@
+mongo3:
+  hostname: mongo3
+  image: mongo:latest
+  entrypoint: [ "/usr/bin/mongod", "--replSet", "rs", "--journal", "--smallfiles", "--rest" ]
+  ports:
+    - "27018:27017"
+    - "28018:28017"
+  container_name: mongo3
+  volumes:
+    - haostay_dev_mongo:/haostay_dev/mongo3
+
+mongo2:
+  hostname: mongo2
+  image: mongo:latest
+  entrypoint: [ "/usr/bin/mongod", "--replSet", "rs", "--journal", "--smallfiles", "--rest" ]
+  ports:
+    - "27019:27017"
+    - "28019:28017"
+  container_name: mongo2
+  volumes:
+      - haostay_dev_mongo:/haostay_dev/mongo2
+
+
+mongo1:
+  hostname: mongo1
+  image: mongo:latest
+  entrypoint: [ "/usr/bin/mongod", "--replSet", "rs", "--journal", "--smallfiles", "--rest" ]
+  ports:
+    - "27017:27017"
+    - "28017:28017"
+  container_name: mongo1
+  volumes:
+    - haostay_dev_mongo:/haostay_dev/mongo1
+  links:
+    - mongo2:mongo2
+    - mongo3:mongo3
+
+
+elasticsearch:
+  image: elasticsearch:2.3.3
+  container_name: elasticsearch
+  hostname: elasticsearch
+  mem_limit: 1024m
+  ports:
+    - "9200:9200"
+    - "9300:9300"
+  links:
+    - mongo1:mongo1
+    - mongo2:mongo2
+    - mongo3:mongo3
+  volumes:
+    - haostay_dev_elasticsearch:/haostay_dev/elasticsearch
+    - ./scripts/logging.yml:/etc/elasticsearch/logging.yml
+
+
+# This configures the MongoDB replicaset
+mongosetup:
+  image: mongo:latest
+  container_name: "mongo-rs-setup"
+  links:
+    - mongo1:mongo1
+    - mongo2:mongo2
+    - mongo3:mongo3
+  volumes:
+    - ./scripts:/scripts
+  environment: 
+    - MONGO1=mongo1
+    - MONGO2=mongo2
+    - MONGO3=mongo3
+    - RS=rs
+  entrypoint: [ "/scripts/setup.sh" ]
+
+rabbitmq:
+  build: ./rabbitmq
+  container_name: rabbitmq
+  volumes:
+   - haostay_dev_rabbitmq:/haostay_dev/rabbitmq
+  ports:
+   - "15674:15674"
+   - "5672:5672"
+   - "5671:5671"
+   - "15672:15672"
+   - "15671:15671"
+   - "61613:61613"
+   - "61614:61614"
+   - "25672:25672"
+   - "4369:4369"
+  entrypoint: ["/usr/bin/rabbitmq-start"]
+
+
+redis:
+   build: ./redis
+   container_name: redis
+   hostname: redis
+   volumes:
+     - haostay_dev_redis:/haostay_dev/redis
+     - haostay_dev_redis_data:/data
+   ports:
+     - "6379:6379"
+   command: redis-server /usr/bin/redis.conf --protected-mode no
+
+
+pouchdb:
+  build: ./pouchdb
+  container_name: pouchdb
+  volumes:
+   - haostay_dev_pouchdb:/haostay_dev/pouchdb
+  ports:
+   - "5984:5984"
+
+
+mongoconnector:
+  build: ./mongoconnector
+  container_name: mongoconnector
+  links:
+    - elasticsearch:elasticsearch
+    - mongo1:mongo1
+    - mongo2:mongo2
+    - mongo3:mongo3
+  entrypoint: [ "/usr/bin/mongoconnector" ]
+
