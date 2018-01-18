@@ -53,7 +53,7 @@ services:
             - MONGO1=mongo1
             - MONGO2=mongo2
             - MONGO3=mongo3
-            - RS=rs2
+            - RS=rs1
         entrypoint: [ "/scripts/setup.sh" ]
 
     elasticsearch:
