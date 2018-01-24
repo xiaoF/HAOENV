@@ -120,6 +120,8 @@ services:
             - mongo1:mongo1
             - mongo2:mongo2
             - mongo3:mongo3
+        volumes:
+            - haostay_dev_mongoconnector:/haostay_dev/mongoconnector
         entrypoint: [ "/usr/bin/mongoconnector" ]
 
 volumes:
@@ -129,3 +131,4 @@ volumes:
   haostay_dev_redis:
   haostay_dev_redis_data:
   haostay_dev_pouchdb:
+  haostay_dev_mongoconnector:
