@@ -2,7 +2,7 @@ version: '2'
 services:
     mongo2:
         container_name: "tt_mongo2"
-        image: mongo
+        image: mongo:3.0.7
         ports:
             - "27018:27017"
             - "28018:28017"
@@ -12,7 +12,7 @@ services:
 
     mongo3:
         container_name: "tt_mongo3"
-        image: mongo
+        image: mongo:3.0.7
         ports:
             - "27019:27017"
             - "28019:28017"
@@ -22,7 +22,7 @@ services:
 
     mongo1:
         container_name: "tt_mongo1"
-        image: mongo
+        image: mongo:3.0.7
         ports:
             - "27017:27017"
             - "28017:28017"
