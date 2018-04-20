@@ -6,7 +6,7 @@ services:
         ports:
             - "27018:27017"
             - "28018:28017"
-        command: mongod --replSet rs1 --dbpath /data/db/haostay --port 27017 --journal --smallfiles 
+        command: mongod --replSet rs1 --port 27017 --journal --smallfiles 
         volumes:
             - haostay_dev_mongo:/haostay_dev/mongo2
 
@@ -16,7 +16,7 @@ services:
         ports:
             - "27019:27017"
             - "28019:28017"
-        command: mongod --replSet rs1 --dbpath /data/db/haostay --port 27017 --journal --smallfiles
+        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
         volumes:
             - haostay_dev_mongo:/haostay_dev/mongo3
 
@@ -26,7 +26,7 @@ services:
         ports:
             - "27017:27017"
             - "28017:28017"
-        command: mongod --replSet rs1 --dbpath /data/db/haostay --port 27017 --journal --smallfiles
+        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
         volumes:
             - haostay_dev_mongo:/haostay_dev/mongo1
         links:
