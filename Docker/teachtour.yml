@@ -35,7 +35,7 @@ services:
 
     mongo-rs-setup:
         container_name: "tt_mongo-rs-setup"
-        image: mongo
+        image: mongo:3.0.7
         depends_on:
             - "mongo1"
             - "mongo2"
