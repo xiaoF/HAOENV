@@ -6,7 +6,7 @@ services:
         ports:
             - "27018:27017"
             - "28018:28017"
-        command: mongod --replSet rs1 --port 27017 --journal --smallfiles 
+        command: mongod --dbpath /data/ttdb --replSet rs1 --port 27017 --journal --smallfiles 
         volumes:
             - tt_mongo:/tt/mongo2
 
@@ -16,7 +16,7 @@ services:
         ports:
             - "27019:27017"
             - "28019:28017"
-        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
+        command: mongod --dbpath /data/ttdb --replSet rs1 --port 27017 --journal --smallfiles
         volumes:
             - tt_mongo:/tt/mongo3
 
@@ -26,7 +26,7 @@ services:
         ports:
             - "27017:27017"
             - "28017:28017"
-        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
+        command: mongod --dbpath /data/ttdb --replSet rs1 --port 27017 --journal --smallfiles
         volumes:
             - tt_mongo:/tt/mongo1
         links:
