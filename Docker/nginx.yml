@@ -1,0 +1,30 @@
+version: '2'
+services:
+    web1:
+        image: crccheck/hello-world:latest
+        container_name: web1
+        hostname: web1
+#        ports:
+#          - "3000:8000"
+
+    web2:
+        build: ./web
+        container_name: web2
+        hostname: web2
+#        ports:
+#          - "8080:8000"
+
+    nginx:
+      build: ./nginx
+      container_name: nginx
+      depends_on:
+        - web1
+        - web2
+#        - web2
+#      links:
+#        - web1:web1
+#        - web2:web2
+#      environment:
+#        HOST_TARGET: "prod"
+      ports:
+        - "80:80"

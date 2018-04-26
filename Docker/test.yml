@@ -1,0 +1,63 @@
+version: '2'
+services:
+    mongo2:
+        container_name: "mongo2"
+        image: mongo:3.0.7
+        ports:
+            - "27018:27017"
+            - "28018:28017"
+        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
+        volumes:
+            - mongo:/teachtour/mongo2
+
+    mongo3:
+        container_name: "mongo3"
+        image: mongo:3.0.7
+        ports:
+            - "27019:27017"
+            - "28019:28017"
+        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
+        volumes:
+            - mongo:/teachtour/mongo3
+
+    mongo1:
+        container_name: "mongo1"
+        image: mongo:3.0.7
+        ports:
+            - "27017:27017"
+            - "28017:28017"
+        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
+        volumes:
+            - mongo:/teachtour/mongo1
+        links:
+            - mongo2:mongo2
+            - mongo3:mongo3
+
+    mongo-rs-setup:
+        container_name: "mongo-rs-setup"
+        image: mongo:3.0.7
+        depends_on:
+            - "mongo1"
+            - "mongo2"
+            - "mongo3"
+        links:
+            - mongo1:mongo1
+            - mongo2:mongo2
+            - mongo3:mongo3
+        volumes:
+            - ./scripts:/scripts
+        environment: 
+            - MONGO1=mongo1
+            - MONGO2=mongo2
+            - MONGO3=mongo3
+            - RS=rs1
+        entrypoint: [ "/scripts/setup.sh" ]
+
+volumes:
+  mongo:
+#  elasticsearch:
+#  rabbitmq:
+#  redis:
+#  redis_data:
+#  pouchdb:
+#  mongoconnector:
