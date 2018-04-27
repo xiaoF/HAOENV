@@ -35,7 +35,7 @@ services:
 
     mongo-rs-setup:
         container_name: "mongo-rs-setup"
-        image: mongo:3.0.7
+        build: ./mongosetup
         depends_on:
             - "mongo1"
             - "mongo2"
@@ -51,7 +51,7 @@ services:
             - MONGO2=mongo2
             - MONGO3=mongo3
             - RS=rs1
-        entrypoint: [ "/scripts/setup.sh" ]
+        entrypoint: [ "/setup.sh" ]
 
     elasticsearch:
         image: elasticsearch:2.3.3

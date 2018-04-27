@@ -23,6 +23,7 @@ services:
     mongo1:
         container_name: "mongo1"
         image: mongo:3.0.7
+        hostname: mongo1
         ports:
             - "27017:27017"
             - "28017:28017"
@@ -35,7 +36,7 @@ services:
 
     mongo-rs-setup:
         container_name: "mongo-rs-setup"
-        image: mongo:3.0.7
+        build: ./mongosetup
         depends_on:
             - "mongo1"
             - "mongo2"
@@ -51,13 +52,41 @@ services:
             - MONGO2=mongo2
             - MONGO3=mongo3
             - RS=rs1
-        entrypoint: [ "/scripts/setup.sh" ]
+        entrypoint: [ "/setup.sh" ]
+
+    todos:
+      build: ~/Downloads/todos
+      container_name: todos
+      hostname: todos
+      environment:
+        MONGO_URL: "mongodb://mongo1:27017"
+        PORT: 3000
+        ROOT_URL: "http://teachtours.com"
+        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local"
+        METEOR_ENV: "prod"
+      expose:
+        - 3000
+      depends_on:
+        - "mongo-rs-setup"
+      links:
+            - mongo1:mongo1
+            - mongo2:mongo2
+            - mongo3:mongo3
+      restart: always
+
+    nginx:
+      build: ./nginx
+      container_name: nginx
+      depends_on:
+        - todos
+#        - web2
+#      links:
+#        - web1:web1
+#        - web2:web2
+#      environment:
+#        HOST_TARGET: "prod"
+      ports:
+        - "80:80"
 
 volumes:
   mongo:
-#  elasticsearch:
-#  rabbitmq:
-#  redis:
-#  redis_data:
-#  pouchdb:
-#  mongoconnector:

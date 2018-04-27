@@ -55,7 +55,7 @@ elasticsearch:
 
 # This configures the MongoDB replicaset
 mongosetup:
-  image: mongo:latest
+  build: ./mongosetup
   container_name: "mongo-rs-setup"
   links:
     - mongo1:mongo1
@@ -68,7 +68,7 @@ mongosetup:
     - MONGO2=mongo2
     - MONGO3=mongo3
     - RS=rs
-  entrypoint: [ "/scripts/setup.sh" ]
+  entrypoint: [ "/setup.sh" ]
 
 rabbitmq:
   build: ./rabbitmq
