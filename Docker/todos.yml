@@ -74,11 +74,23 @@ services:
             - mongo3:mongo3
       restart: always
 
+    web1:
+        image: crccheck/hello-world:latest
+        container_name: web1
+        hostname: web1
+
+    web2:
+        build: ./web
+        container_name: web2
+        hostname: web2
+
     nginx:
       build: ./nginx
       container_name: nginx
       depends_on:
         - todos
+        - web1
+        - web2
 #        - web2
 #      links:
 #        - web1:web1
