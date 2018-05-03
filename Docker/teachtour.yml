@@ -1,131 +1,52 @@
 version: '2'
 services:
-    mongo2:
-        container_name: "tt_mongo2"
-        image: mongo:3.0.7
-        ports:
-            - "27018:27017"
-            - "28018:28017"
-        command: mongod --replSet rs1 --port 27017 --journal --smallfiles 
-        volumes:
-            - tt_mongo:/tt/mongo2
-
-    mongo3:
-        container_name: "tt_mongo3"
-        image: mongo:3.0.7
-        ports:
-            - "27019:27017"
-            - "28019:28017"
-        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
-        volumes:
-            - tt_mongo:/tt/mongo3
-
-    mongo1:
-        container_name: "tt_mongo1"
-        image: mongo:3.0.7
-        ports:
-            - "27017:27017"
-            - "28017:28017"
-        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
-        volumes:
-            - tt_mongo:/tt/mongo1
-        links:
-            - mongo2:mongo2
-            - mongo3:mongo3
-
-    mongo-rs-setup:
-        container_name: "tt_mongo-rs-setup"
-        build: ./mongosetup
-        depends_on:
-            - "mongo1"
-            - "mongo2"
-            - "mongo3"
-        links:
+    teachtour-web:
+      build: ~/Documents/0-Code/Git/haostay-home/teachtour-web
+      container_name: teachtour-web
+      hostname: teachtour-web
+      environment:
+        MONGO_URL: "mongodb://mongo1:27017"
+        PORT: 3000
+        ROOT_URL: "http://teachtours.com"
+        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local"
+        METEOR_ENV: "prod"
+      expose:
+        - 3000
+      links:
+            - redis:redis
             - mongo1:mongo1
             - mongo2:mongo2
             - mongo3:mongo3
-        volumes:
-            - ./scripts:/scripts
-        environment: 
-            - MONGO1=mongo1
-            - MONGO2=mongo2
-            - MONGO3=mongo3
-            - RS=rs1
-        entrypoint: [ "/setup.sh" ]
+      restart: always
 
-    # elasticsearch:
-    #     image: elasticsearch:2.3.3
-    #     container_name: tt_elasticsearch
-    #     hostname: elasticsearch
-    #     mem_limit: 1024m
-    #     ports:
-    #         - "9200:9200"
-    #         - "9300:9300"
-    #     links:
-    #         - mongo1:mongo1
-    #         - mongo2:mongo2
-    #         - mongo3:mongo3
-    #     volumes:
-    #         - tt_elasticsearch:/tt/elasticsearch
-    #         - ./scripts/logging.yml:/etc/elasticsearch/logging.yml
+    teachtour-admin:
+      build: ~/Documents/0-Code/Git/haostay-home/teachtour-admin
+      container_name: teachtour-admin
+      hostname: teachtour-admin
+      environment:
+        MONGO_URL: "mongodb://mongo1:27017"
+        PORT: 3001
+        ROOT_URL: "http://b.teachtours.com"
+        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local"
+        METEOR_ENV: "prod"
+      expose:
+        - 3001
+      links:
+            - redis:redis
+            - mongo1:mongo1
+            - mongo2:mongo2
+            - mongo3:mongo3
+      restart: always
 
-
-    rabbitmq:
-        build: ./rabbitmq
-        container_name: tt_rabbitmq
-        volumes:
-        - tt_rabbitmq:/tt/rabbitmq
-        ports:
-        - "15674:15674"
-        - "5672:5672"
-        - "5671:5671"
-        - "15672:15672"
-        - "15671:15671"
-        - "61613:61613"
-        - "61614:61614"
-        - "25672:25672"
-        - "4369:4369"
-        entrypoint: ["/usr/bin/rabbitmq-start"]
-
-
-    redis:
-        build: ./redis
-        container_name: tt_redis
-        hostname: redis
-        volumes:
-            - tt_redis:/tt/redis
-            - tt_redis_data:/data
-        ports:
-            - "6379:6379"
-        command: redis-server /usr/bin/redis.conf --protected-mode no
-
-
-    pouchdb:
-        build: ./pouchdb
-        container_name: tt_pouchdb
-        volumes:
-        - tt_pouchdb:/tt/pouchdb
-        ports:
-        - "5984:5984"
-
-
-    # mongoconnector:
-    #     build: ./mongoconnector
-    #     container_name: mongoconnector
-    #     links:
-    #         - elasticsearch:elasticsearch
-    #         - mongo1:mongo1
-    #         - mongo2:mongo2
-    #         - mongo3:mongo3
-    #     volumes:
-    #         - tt_mongoconnector:/tt/mongoconnector
-    #     entrypoint: [ "/usr/bin/mongoconnector" ]
+    nginx:
+      build: ./nginx
+      container_name: nginx
+      depends_on:
+        - teachtour-web
+        - teachtour-admin
+      ports:
+        - "80:80"
 
 volumes:
-  tt_mongo:
-  tt_elasticsearch:
-  tt_rabbitmq:
-  tt_redis:
-  tt_redis_data:
-  tt_pouchdb:
-  tt_mongoconnector:
+  mongo:
+  redis:

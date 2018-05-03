@@ -54,10 +54,20 @@ services:
             - RS=rs1
         entrypoint: [ "/setup.sh" ]
 
-    todos:
-      build: ~/Downloads/todos
-      container_name: todos
-      hostname: todos
+    redis:
+       image: redis:3.2.0
+       container_name: redis
+       hostname: redis
+       ports:
+         - "6379:6379"
+       volumes:
+         - redis:/var/lib/redis
+       restart: always
+
+    teachtour-web:
+      build: ~/Documents/0-Code/Git/haostay-home/teachtour-web
+      container_name: teachtour-web
+      hostname: teachtour-web
       environment:
         MONGO_URL: "mongodb://mongo1:27017"
         PORT: 3000
@@ -69,28 +79,39 @@ services:
       depends_on:
         - "mongo-rs-setup"
       links:
+            - redis:redis
             - mongo1:mongo1
             - mongo2:mongo2
             - mongo3:mongo3
       restart: always
 
-    web1:
-        image: crccheck/hello-world:latest
-        container_name: web1
-        hostname: web1
-
-    web2:
-        build: ./web
-        container_name: web2
-        hostname: web2
+    teachtour-admin:
+      build: ~/Documents/0-Code/Git/haostay-home/teachtour-admin
+      container_name: teachtour-admin
+      hostname: teachtour-admin
+      environment:
+        MONGO_URL: "mongodb://mongo1:27017"
+        PORT: 3001
+        ROOT_URL: "http://b.teachtours.com"
+        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local"
+        METEOR_ENV: "prod"
+      expose:
+        - 3001
+      depends_on:
+        - "mongo-rs-setup"
+      links:
+            - redis:redis
+            - mongo1:mongo1
+            - mongo2:mongo2
+            - mongo3:mongo3
+      restart: always
 
     nginx:
       build: ./nginx
       container_name: nginx
       depends_on:
-        - todos
-        - web1
-        - web2
+        - teachtour-web
+        - teachtour-admin
 #        - web2
 #      links:
 #        - web1:web1
@@ -102,3 +123,4 @@ services:
 
 volumes:
   mongo:
+  redis:
