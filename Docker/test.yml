@@ -1,24 +1,12 @@
 version: '2'
 services:
-    mongo2:
-        container_name: "mongo2"
-        image: mongo:3.0.7
-        ports:
-            - "27018:27017"
-            - "28018:28017"
-        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
-        volumes:
-            - mongo:/teachtour/mongo2
 
-    mongo3:
-        container_name: "mongo3"
+    mongodata:
         image: mongo:3.0.7
-        ports:
-            - "27019:27017"
-            - "28019:28017"
-        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
+        container_name: mongodata
         volumes:
-            - mongo:/teachtour/mongo3
+          - /db
+        command: chown mongodb:mongodb /db && tail -f /dev/null
 
     mongo1:
         container_name: "mongo1"
@@ -26,33 +14,8 @@ services:
         hostname: mongo1
         ports:
             - "27017:27017"
-            - "28017:28017"
-        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
-        volumes:
-            - mongo:/teachtour/mongo1
-        links:
-            - mongo2:mongo2
-            - mongo3:mongo3
-
-    mongo-rs-setup:
-        container_name: "mongo-rs-setup"
-        build: ./mongosetup
-        depends_on:
-            - "mongo1"
-            - "mongo2"
-            - "mongo3"
-        links:
-            - mongo1:mongo1
-            - mongo2:mongo2
-            - mongo3:mongo3
-        volumes:
-            - ./scripts:/scripts
-        environment: 
-            - MONGO1=mongo1
-            - MONGO2=mongo2
-            - MONGO3=mongo3
-            - RS=rs1
-        entrypoint: [ "/setup.sh" ]
+        volumes_from:
+            - mongodata
 
     redis:
        image: redis:3.2.0
@@ -100,14 +63,10 @@ services:
         METEOR_ENV: "stage"
       expose:
         - 3000
-      depends_on:
-        - "mongo-rs-setup"
       links:
             - teachtour-messager:teachtour-messager
             - redis:redis
             - mongo1:mongo1
-            - mongo2:mongo2
-            - mongo3:mongo3
       restart: always
 
     teachtour-admin:
@@ -122,14 +81,10 @@ services:
         METEOR_ENV: "stage"
       expose:
         - 3001
-      depends_on:
-        - "mongo-rs-setup"
       links:
             - teachtour-messager:teachtour-messager
             - redis:redis
             - mongo1:mongo1
-            - mongo2:mongo2
-            - mongo3:mongo3
       restart: always
 
     teachtour-org:
@@ -144,14 +99,10 @@ services:
         METEOR_ENV: "stage"
       expose:
         - 3002
-      depends_on:
-        - "mongo-rs-setup"
       links:
             - teachtour-messager:teachtour-messager
             - redis:redis
             - mongo1:mongo1
-            - mongo2:mongo2
-            - mongo3:mongo3
       restart: always
 
     teachtour-messager:
@@ -166,14 +117,10 @@ services:
         METEOR_ENV: "stage"
       expose:
         - 3003
-      depends_on:
-        - "mongo-rs-setup"
       links:
             - rabbitmq:rabbitmq
             - redis:redis
             - mongo1:mongo1
-            - mongo2:mongo2
-            - mongo3:mongo3
       restart: always
 
 
