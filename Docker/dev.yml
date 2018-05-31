@@ -6,7 +6,7 @@ services:
         ports:
             - "27018:27017"
             - "28018:28017"
-        command: mongod --replSet rs1 --shardsvr --port 27017 --nojournal --oplogSize 16 --noprealloc --smallfiles
+        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
         volumes:
             - dev_mongo:/mongo2
         restart: always
@@ -17,7 +17,7 @@ services:
         ports:
             - "27019:27017"
             - "28019:28017"
-        command: mongod --replSet rs1 --shardsvr --port 27017 --nojournal --oplogSize 16 --noprealloc --smallfiles
+        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
         volumes:
             - dev_mongo:/mongo3
         restart: always 
@@ -28,7 +28,7 @@ services:
         ports:
             - "27017:27017"
             - "28017:28017"
-        command: mongod --replSet rs1 --shardsvr --port 27017 --nojournal --oplogSize 16 --noprealloc --smallfiles
+        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
         volumes:
             - dev_mongo:/mongo1
         links:

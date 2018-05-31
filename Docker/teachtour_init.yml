@@ -96,8 +96,8 @@ services:
         MONGO_URL: "mongodb://mongo1:27017"
         PORT: 3000
         ROOT_URL: "http://teachtours.com"
-        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local"
-        METEOR_ENV: "stage"
+        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local?replicaSet=rs1"
+        METEOR_ENV: "prod"
       expose:
         - 3000
       depends_on:
@@ -118,8 +118,8 @@ services:
         MONGO_URL: "mongodb://mongo1:27017"
         PORT: 3001
         ROOT_URL: "http://admin.teachtours.com"
-        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local"
-        METEOR_ENV: "stage"
+        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local?replicaSet=rs1"
+        METEOR_ENV: "prod"
       expose:
         - 3001
       depends_on:
@@ -140,8 +140,8 @@ services:
         MONGO_URL: "mongodb://mongo1:27017"
         PORT: 3002
         ROOT_URL: "http://b.teachtours.com"
-        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local"
-        METEOR_ENV: "stage"
+        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local?replicaSet=rs1"
+        METEOR_ENV: "prod"
       expose:
         - 3002
       depends_on:
@@ -162,8 +162,8 @@ services:
         MONGO_URL: "mongodb://mongo1:27017"
         PORT: 3003
         ROOT_URL: "http://msg.teachtours.com"
-        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local"
-        METEOR_ENV: "stage"
+        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local?replicaSet=rs1"
+        METEOR_ENV: "prod"
       expose:
         - 3003
       depends_on:
