@@ -22,17 +22,15 @@ mongo --host ${mongodb1}:${port} <<EOF
             {
                 "_id": 0,
                 "host": "${mongodb1}:${port}",
-                "priority" : 2
+                "priority" : 3
             },
             {
                 "_id": 1,
-                "host": "${mongodb2}:${port}",
-                "priority" : 1
+                "host": "${mongodb2}:${port}"
             },
             {
                 "_id": 2,
-                "host": "${mongodb3}:${port}",
-                ""priority" : 1,
+                "host": "${mongodb3}:${port}"
             }
         ]
     };
