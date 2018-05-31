@@ -1,146 +1,75 @@
 version: '2'
 services:
-
-    mongodata:
-        image: mongo:3.0.7
-        container_name: mongodata
+    mongo2:
+        container_name: "mongo2"
+        image: mongo
+        ports:
+            - "27018:27017"
+            - "28018:28017"
+        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
         volumes:
-          - /db
-        command: chown mongodb:mongodb /db && tail -f /dev/null
+            - dev_mongo:/mongo2
+        restart: always
+
+    mongo3:
+        container_name: "mongo3"
+        image: mongo
+        ports:
+            - "27019:27017"
+            - "28019:28017"
+        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
+        volumes:
+            - dev_mongo:/mongo3
+        restart: always 
 
     mongo1:
         container_name: "mongo1"
-        image: mongo:3.0.7
-        hostname: mongo1
+        image: mongo
         ports:
             - "27017:27017"
-        volumes_from:
-            - mongodata
+            - "28017:28017"
+        command: mongod --replSet rs1 --port 27017 --journal --smallfiles
+        volumes:
+            - dev_mongo:/mongo1
+        links:
+            - mongo2:mongo2
+            - mongo3:mongo3
+        restart: always
 
-    redis:
-       image: redis:3.2.0
-       container_name: redis
-       hostname: redis
-       ports:
-         - "6379:6379"
-       volumes:
-         - redis:/var/lib/redis
-       restart: always
-
-    rabbitdata:
-      image: rabbitmq:latest
-      volumes:
-        - /var/lib/rabbitmq
-      command: tail -f /dev/null
-
-    rabbitmq:
-        build: ./rabbitmq
-        container_name: rabbitmq
-        hostname: rabbitmq
-        volumes_from:
-         - rabbitdata
-        ports:
-        - "15674:15674"
-        - "5672:5672"
-        - "5671:5671"
-        - "15672:15672"
-        - "15671:15671"
-        - "61613:61613"
-        - "61614:61614"
-        - "25672:25672"
-        - "4369:4369"
-        entrypoint: ["/usr/bin/rabbitmq-start"]
-
-    teachtour-web:
-      build: ~/Documents/0-Code/Git/haostay-home/teachtour-web
-      container_name: teachtour-web
-      hostname: teachtour-web
-      environment:
-        MONGO_URL: "mongodb://mongo1:27017"
-        PORT: 3000
-        ROOT_URL: "http://teachtours.com"
-        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local"
-        METEOR_ENV: "stage"
-      expose:
-        - 3000
-      links:
-            - teachtour-messager:teachtour-messager
-            - redis:redis
+    mongo-rs-setup:
+        container_name: "mongo-rs-setup"
+        build: ./mongosetup
+        depends_on:
+            - "mongo1"
+            - "mongo2"
+            - "mongo3"
+        links:
             - mongo1:mongo1
-      restart: always
+            - mongo2:mongo2
+            - mongo3:mongo3
+        volumes:
+            - ./scripts:/scripts
+        environment: 
+            - MONGO1=mongo1
+            - MONGO2=mongo2
+            - MONGO3=mongo3
+            - RS=rs1
+        entrypoint: [ "/setup.sh" ]
 
-    teachtour-admin:
-      build: ~/Documents/0-Code/Git/haostay-home/teachtour-admin
-      container_name: teachtour-admin
-      hostname: teachtour-admin
-      environment:
-        MONGO_URL: "mongodb://mongo1:27017"
-        PORT: 3001
-        ROOT_URL: "http://admin.teachtours.com"
-        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local"
-        METEOR_ENV: "stage"
-      expose:
-        - 3001
-      links:
-            - teachtour-messager:teachtour-messager
-            - redis:redis
-            - mongo1:mongo1
-      restart: always
-
-    teachtour-org:
-      build: ~/Documents/0-Code/Git/haostay-home/teachtour-org
-      container_name: teachtour-org
-      hostname: teachtour-org
-      environment:
-        MONGO_URL: "mongodb://mongo1:27017"
-        PORT: 3002
-        ROOT_URL: "http://b.teachtours.com"
-        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local"
-        METEOR_ENV: "stage"
-      expose:
-        - 3002
-      links:
-            - teachtour-messager:teachtour-messager
-            - redis:redis
-            - mongo1:mongo1
-      restart: always
-
-    teachtour-messager:
-      build: ~/Documents/0-Code/Git/haostay-home/teachtour-messager
-      container_name: teachtour-messager
-      hostname: teachtour-messager
-      environment:
-        MONGO_URL: "mongodb://mongo1:27017"
-        PORT: 3003
-        ROOT_URL: "http://msg.teachtours.com"
-        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local"
-        METEOR_ENV: "stage"
-      expose:
-        - 3003
-      links:
-            - rabbitmq:rabbitmq
-            - redis:redis
-            - mongo1:mongo1
-      restart: always
-
-
-    nginx:
-      build: ./nginx
-      container_name: nginx
-      depends_on:
-        - teachtour-web
-        - teachtour-admin
-        - teachtour-org
-        - teachtour-messager
-#        - web2
-#      links:
-#        - web1:web1
-#        - web2:web2
-#      environment:
-#        HOST_TARGET: "prod"
-      ports:
-        - "80:80"
+    # mongoconnector:
+    #     build: ./mongoconnector
+    #     container_name: mongoconnector
+    #     links:
+    #         - elasticsearch:elasticsearch
+    #         - mongo1:mongo1
+    #         - mongo2:mongo2
+    #         - mongo3:mongo3
+    #     entrypoint: [ "/usr/bin/mongoconnector" ]
 
 volumes:
-  mongo:
-  redis:
+  dev_mongo:
+  dev_elasticsearch:
+  dev_rabbitmq:
+  dev_redis:
+  dev_redis_data:
+  dev_pouchdb:

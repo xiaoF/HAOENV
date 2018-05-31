@@ -22,7 +22,7 @@ mongo --host ${mongodb1}:${port} <<EOF
             {
                 "_id": 0,
                 "host": "${mongodb1}:${port}",
-                "priority" : 3
+                "priority" : 5
             },
             {
                 "_id": 1,
