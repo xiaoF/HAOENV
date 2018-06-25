@@ -9,7 +9,7 @@ services:
         command: mongod --replSet rs1 --port 27017 --journal --smallfiles
         volumes:
             - dev_mongo:/mongo2
-        restart: always
+
 
     mongo3:
         container_name: "mongo3"
@@ -20,7 +20,7 @@ services:
         command: mongod --replSet rs1 --port 27017 --journal --smallfiles
         volumes:
             - dev_mongo:/mongo3
-        restart: always 
+
 
     mongo1:
         container_name: "mongo1"
@@ -34,7 +34,7 @@ services:
         links:
             - mongo2:mongo2
             - mongo3:mongo3
-        restart: always
+
 
     mongo-rs-setup:
         container_name: "mongo-rs-setup"
