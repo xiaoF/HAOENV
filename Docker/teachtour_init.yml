@@ -110,6 +110,29 @@ services:
             - mongo3:mongo3
       restart: always
 
+    teachtour-mobile:
+      build: ~/Documents/0-Code/Git/haostay-home/teachtour-mobile
+      container_name: teachtour-mobile
+      hostname: teachtour-mobile
+      environment:
+        MONGO_URL: "mongodb://mongo1:27017"
+        PORT: 3004
+        ROOT_URL: "http://m.teachtours.com"
+        MONGO_OPLOG_URL: "mongodb://mongo1:27017/local?replicaSet=rs1"
+        METEOR_ENV: "prod"
+      expose:
+        - 3004
+      depends_on:
+        - "mongo-rs-setup"
+      links:
+            - teachtour-messager:teachtour-messager
+            - redis:redis
+            - mongo1:mongo1
+            - mongo2:mongo2
+            - mongo3:mongo3
+      restart: always
+      
+
     teachtour-admin:
       build: ~/Documents/0-Code/Git/haostay-home/teachtour-admin
       container_name: teachtour-admin
